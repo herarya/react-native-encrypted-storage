@@ -37,10 +37,15 @@ RCT_EXPORT_METHOD(setItem:(NSString *)key withValue:(NSString *)value resolver:(
         return;
     }
     
+    CFErrorRef error = NULL;
+    SecAccessControlRef accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
+                                                kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+                                                kSecAccessControlTouchIDAny|kSecAccessControlOr|kSecAccessControlDevicePasscode, &error);
     // Prepares the insert query structure
     NSDictionary* storeQuery = @{
         (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
         (__bridge id)kSecAttrAccount : key,
+        (__bridge id)kSecAttrAccessControl : (__bridge id) accessControl,
         (__bridge id)kSecValueData : dataFromValue
     };
     
